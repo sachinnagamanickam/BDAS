@@ -23,27 +23,6 @@ Stores and retrieves trusted device data from the SQLite database.
 Enforces expiration logic for device tokens.
 
 
-Directory Structure:
-
-
-email-submission-project/
-├── frontend/                # Frontend application
-│   └── index.html           # Main HTML file
-│
-├── backend/                 # Backend Node.js application
-│   ├── server.js            # Main backend server code
-│   ├── package.json         # Node.js dependencies
-│   └── auth_data.db         # SQLite database for storing trusted 
-│
-├── biometric-server/        # Biometric authentication server
-│   ├── Sources/             # Vapor application source code
-│   │   └── BiometricAuth/   # Main Vapor app module
-│   │       └── main.swift   # Entry point for Vapor server
-│   └── Package.swift        # Swift package manager file
-│
-└── README.md                # Documentation for the project
-
-
 Frontend:
 Technologies
 HTML: For the user interface.
