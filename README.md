@@ -214,6 +214,3 @@ CREATE TABLE trusted_devices (
    - Open `frontend/index.html` in your browser.
 
 ---
-
-## License
-This project is licensed under the MIT License.
