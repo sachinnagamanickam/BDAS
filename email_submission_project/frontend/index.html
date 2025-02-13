@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Device Validation with Biometric Authentication</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .container {
+      max-width: 500px;
+      margin: auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      background-color: #f9f9f9;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .message {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Add Trusted Device</h2>
+    <form id="addDeviceForm">
+      <input type="text" id="addUserId" placeholder="Enter User ID" required />
+      <input type="text" id="addDeviceId" placeholder="Enter Device ID" required />
+      <input type="number" id="addExpires" placeholder="Enter Expiration Timestamp (ms)" required />
+      <button type="submit">Add Device</button>
+    </form>
+    <p id="addDeviceMessage" class="message"></p>
+  </div>
+
+  <div class="container" style="margin-top: 20px;">
+    <h2>Validate Device</h2>
+    <form id="validateDeviceForm">
+      <input type="text" id="validateUserId" placeholder="Enter User ID" required />
+      <input type="text" id="validateDeviceId" placeholder="Enter Device ID" required />
+      <input type="number" id="validateExpires" placeholder="Enter Expiration Timestamp (ms)" required />
+      <button type="submit">Validate Device</button>
+    </form>
+    <p id="validateDeviceMessage" class="message"></p>
+  </div>
+
+  <script>
+    const biometricServerUrl = 'http://127.0.0.1:8080/authenticate'; // Biometric server endpoint
+
+    // Function to perform biometric authentication
+    async function performBiometricAuthentication() {
+      try {
+        const response = await fetch(biometricServerUrl, { method: 'GET' });
+        const result = await response.text();
+        return result === 'success'; // Return true if biometric authentication succeeds
+      } catch (error) {
+        console.error('Biometric authentication failed:', error);
+        return false;
+      }
+    }
+
+    // Add Trusted Device
+    document.getElementById('addDeviceForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const userId = document.getElementById('addUserId').value.trim();
+      const deviceId = document.getElementById('addDeviceId').value.trim();
+      const expires = parseInt(document.getElementById('addExpires').value.trim(), 10);
+      const messageElement = document.getElementById('addDeviceMessage');
+
+      // Reset message
+      messageElement.textContent = '';
+      messageElement.style.color = '';
+
+      if (!userId || !deviceId || isNaN(expires)) {
+        messageElement.style.color = 'red';
+        messageElement.textContent = 'Please fill in all fields with valid values.';
+        return;
+      }
+
+      // Perform biometric authentication
+      const biometricSuccess = await performBiometricAuthentication();
+      if (!biometricSuccess) {
+        messageElement.style.color = 'red';
+        messageElement.textContent = 'Biometric authentication failed. Operation canceled.';
+        return;
+      }
+
+      try {
+        const response = await fetch('http://localhost:3000/add-device', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, deviceId, expires }),
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          messageElement.style.color = 'green';
+          messageElement.textContent = result.message;
+        } else {
+          messageElement.style.color = 'red';
+          messageElement.textContent = result.message;
+        }
+      } catch (error) {
+        console.error('Error adding device:', error);
+        messageElement.style.color = 'red';
+        messageElement.textContent = 'An error occurred. Please try again later.';
+      }
+    });
+
+    // Validate Device
+    document.getElementById('validateDeviceForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const userId = document.getElementById('validateUserId').value.trim();
+      const deviceId = document.getElementById('validateDeviceId').value.trim();
+      const expires = parseInt(document.getElementById('validateExpires').value.trim(), 10);
+      const messageElement = document.getElementById('validateDeviceMessage');
+
+      // Reset message
+      messageElement.textContent = '';
+      messageElement.style.color = '';
+
+      if (!userId || !deviceId || isNaN(expires)) {
+        messageElement.style.color = 'red';
+        messageElement.textContent = 'Please fill in all fields with valid values.';
+        return;
+      }
+
+      // Perform biometric authentication
+      const biometricSuccess = await performBiometricAuthentication();
+      if (!biometricSuccess) {
+        messageElement.style.color = 'red';
+        messageElement.textContent = 'Biometric authentication failed. Operation canceled.';
+        return;
+      }
+
+      try {
+        const response = await fetch('http://localhost:3000/validate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, deviceId, expires }),
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          messageElement.style.color = 'green';
+          messageElement.textContent = result.message;
+        } else {
+          messageElement.style.color = 'red';
+          messageElement.textContent = result.message;
+        }
+      } catch (error) {
+        console.error('Error validating device:', error);
+        messageElement.style.color = 'red';
+        messageElement.textContent = 'An error occurred. Please try again later.';
+      }
+    });
+  </script>
+</body>
+</html>
