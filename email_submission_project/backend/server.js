@@ -34,20 +34,17 @@ db.serialize(() => {
   );
 });
 
-// Endpoint to validate a device and token
+// Endpoint to validate a device
 app.post('/validate', (req, res) => {
-  const { userId, deviceId, expires } = req.body;
+  const { userId, deviceId } = req.body; // Removed "expires"
 
-  if (!userId || !deviceId || !expires) {
+  if (!userId || !deviceId) {
     console.warn('Missing parameters in the request.');
-    return res.status(400).json({ message: 'userId, deviceId, and expires are required' });
+    return res.status(400).json({ message: 'userId and deviceId are required' });
   }
 
   console.log(`Validating device for userId: ${userId}, deviceId: ${deviceId}`);
 
-  const currentTimestamp = Date.now();
-
-  // Check if the device is trusted and if the token is valid
   db.get(
     'SELECT expires FROM trusted_devices WHERE userId = ? AND deviceId = ?',
     [userId, deviceId],
@@ -60,11 +57,6 @@ app.post('/validate', (req, res) => {
       if (!row) {
         console.warn('Device is not trusted.');
         return res.status(403).json({ message: 'Access denied: device not trusted' });
-      }
-
-      if (row.expires < currentTimestamp) {
-        console.warn('Token has expired.');
-        return res.status(403).json({ message: 'Access denied: token expired' });
       }
 
       console.log('Access granted.');
