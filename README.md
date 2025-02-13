@@ -132,8 +132,7 @@ email-submission-project/
      ```json
      {
        "userId": "user123",
-       "deviceId": "device456",
-       "expires": 1739404050000
+       "deviceId": "device456"
      }
      ```
    - **Response**:
