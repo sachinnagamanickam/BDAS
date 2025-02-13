@@ -16,6 +16,9 @@ The system is divided into three components:
 
 ## System Architecture
 
+![image](https://github.com/user-attachments/assets/6adfcb5d-f964-49f9-8171-bf722afca975)
+
+
 ### Workflow
 1. **Frontend**:
    - User interacts with forms to add or validate a device.
