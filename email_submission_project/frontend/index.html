@@ -60,7 +60,6 @@
     <form id="validateDeviceForm">
       <input type="text" id="validateUserId" placeholder="Enter User ID" required />
       <input type="text" id="validateDeviceId" placeholder="Enter Device ID" required />
-      <input type="number" id="validateExpires" placeholder="Enter Expiration Timestamp (ms)" required />
       <button type="submit">Validate Device</button>
     </form>
     <p id="validateDeviceMessage" class="message"></p>
@@ -137,14 +136,13 @@
 
       const userId = document.getElementById('validateUserId').value.trim();
       const deviceId = document.getElementById('validateDeviceId').value.trim();
-      const expires = parseInt(document.getElementById('validateExpires').value.trim(), 10);
       const messageElement = document.getElementById('validateDeviceMessage');
 
       // Reset message
       messageElement.textContent = '';
       messageElement.style.color = '';
 
-      if (!userId || !deviceId || isNaN(expires)) {
+      if (!userId || !deviceId) {
         messageElement.style.color = 'red';
         messageElement.textContent = 'Please fill in all fields with valid values.';
         return;
@@ -162,7 +160,7 @@
         const response = await fetch('http://localhost:3000/validate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId, deviceId, expires }),
+          body: JSON.stringify({ userId, deviceId }),
         });
 
         const result = await response.json();
